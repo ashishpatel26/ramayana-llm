@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ramayana LLM</title>
+<meta name="description" content="Ramayana Series: small Indian-language LLMs trained from scratch on a single 6 GB laptop GPU. Hanuman-hi-42M is a Hindi base model.">
+<meta property="og:title" content="Ramayana LLM: Indic language models from scratch">
+<meta property="og:description" content="Hanuman-hi-42M: a 42M-parameter Hindi model trained from random init on an RTX 3060 6 GB.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪔</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf6ee; --surface:#fffdf9; --ink:#2a1d14; --muted:#6e5d50; --line:#eadfce;
+  --saffron:#d9661f; --saffron-soft:#fbe7d6; --indigo:#2f3a7a; --gold:#b8860b;
+  --code-bg:#241a14; --code-ink:#f5e9da;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15110e; --surface:#1e1814; --ink:#f3e9dc; --muted:#b5a594; --line:#3a2f27;
+    --saffron:#f08a45; --saffron-soft:#3b2416; --indigo:#a9b4ff; --gold:#e0b44a;
+    --code-bg:#0e0b09; --code-ink:#f5e9da;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15110e; --surface:#1e1814; --ink:#f3e9dc; --muted:#b5a594; --line:#3a2f27;
+  --saffron:#f08a45; --saffron-soft:#3b2416; --indigo:#a9b4ff; --gold:#e0b44a;
+  --code-bg:#0e0b09; --code-ink:#f5e9da;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+a{color:var(--saffron)}
+.hi{font-family:"Tiro Devanagari Hindi",serif}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.15;margin:0 0 .5em}
+h2{font-size:clamp(1.6rem,3.5vw,2.2rem)}
+h3{font-size:1.15rem}
+section{padding:64px 0;border-top:1px solid var(--line)}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--saffron);font-weight:600;margin-bottom:.6em}
+.lead{color:var(--muted);max-width:62ch}
+
+/* nav */
+nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:20px;height:56px}
+nav .brand{font-family:Fraunces,serif;font-weight:700;text-decoration:none;color:var(--ink);margin-right:auto}
+nav a.l{color:var(--muted);text-decoration:none;font-size:.92rem}
+nav a.l:hover{color:var(--ink)}
+#theme{background:none;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:4px 10px;cursor:pointer}
+@media (max-width:640px){nav a.l{display:none}}
+
+/* hero */
+.hero{padding:80px 0 64px;position:relative;overflow:hidden}
+.hero .om{position:absolute;right:-40px;top:10px;font-size:340px;line-height:1;color:var(--saffron);opacity:.07;pointer-events:none}
+.hero h1{font-size:clamp(2.4rem,7vw,4.4rem);margin-bottom:.25em}
+.hero h1 span{color:var(--saffron)}
+.hero .tag{font-size:clamp(1.2rem,3vw,1.6rem);color:var(--indigo);margin:0 0 1em}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:10px;text-decoration:none;font-weight:600;font-size:.95rem;border:1px solid var(--line);color:var(--ink);background:var(--surface)}
+.btn.primary{background:var(--saffron);border-color:var(--saffron);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:44px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.stat b{display:block;font-family:Fraunces,serif;font-size:1.7rem}
+.stat small{color:var(--muted)}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* family */
+.family{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:28px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;position:relative}
+.card.live{border-color:var(--saffron);box-shadow:0 0 0 3px var(--saffron-soft)}
+.card .dev{font-size:1.9rem;color:var(--saffron)}
+.card h3{margin:.2em 0 .1em}
+.card .size{font-size:.85rem;color:var(--indigo);font-weight:600}
+.card p{font-size:.9rem;color:var(--muted);margin:.6em 0 0}
+.pill{position:absolute;top:14px;right:14px;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--line);color:var(--muted)}
+.live .pill{background:var(--saffron);color:#fff}
+
+/* why hanuman */
+.quote{border-left:4px solid var(--saffron);padding:6px 0 6px 20px;margin:24px 0;font-size:1.15rem}
+.quote small{display:block;color:var(--muted);font-family:Inter,sans-serif;font-size:.85rem;margin-top:6px}
+
+/* samples */
+.samples{display:grid;gap:14px;margin-top:24px}
+.sample{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.sample .p{color:var(--saffron);font-weight:600}
+.sample .t{font-size:1.12rem;line-height:1.9}
+.sample .note{font-size:.82rem;color:var(--muted);margin-top:6px}
+
+/* bars */
+.bars{margin-top:24px;display:grid;gap:12px;max-width:640px}
+.bar{display:grid;grid-template-columns:140px 1fr 70px;align-items:center;gap:12px;font-size:.92rem}
+.bar .track{height:14px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar .fill{height:100%;background:var(--saffron);border-radius:99px}
+.bar.dim .fill{background:var(--muted)}
+
+/* table */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:24px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+td{padding:9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{color:var(--muted);width:46%}
+
+/* pipeline */
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:24px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;font-size:.9rem}
+.step::before{counter-increment:s;content:counter(s);display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--saffron-soft);color:var(--saffron);font-weight:700;margin-bottom:8px}
+.step b{display:block;margin-bottom:2px}
+.step span{color:var(--muted)}
+
+/* code */
+.code{position:relative;background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:18px 20px;overflow-x:auto;margin-top:20px}
+.code pre{margin:0;font:13.5px/1.6 "JetBrains Mono",monospace;white-space:pre}
+.copy{position:absolute;top:10px;right:10px;background:#ffffff1a;color:var(--code-ink);border:0;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.8rem}
+
+.limits li{margin:.4em 0}
+footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#">🪔 Ramayana LLM</a>
+  <a class="l" href="#series">Series</a>
+  <a class="l" href="#samples">Samples</a>
+  <a class="l" href="#training">Training</a>
+  <a class="l" href="#use">Use it</a>
+  <button id="theme" aria-label="Toggle colour theme">◐</button>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="om hi" aria-hidden="true">राम</div>
+  <div class="eyebrow">Ramayana Series · Indic LLMs from scratch</div>
+  <h1>Hanuman<span>-hi-42M</span></h1>
+  <p class="tag hi">हिन्दी में सोचने वाला एक छोटा भाषा मॉडल</p>
+  <p class="lead">A 42-million-parameter Hindi language model trained <b>from random initialisation</b>, without any pretrained weights, on a single 6 GB laptop GPU. The tokenizer, data pipeline and training loop were all built from scratch.</p>
+  <div class="btns">
+    <a class="btn primary" href="https://huggingface.co/ashishpatel26/hanuman-hi-42m">🤗 Model on Hugging Face</a>
+    <a class="btn" href="https://github.com/ashishpatel26/Indian-Language-llm-model">Training code</a>
+    <a class="btn" href="https://huggingface.co/collections/ashishpatel26/ramayana-series-indic-llms-from-scratch-6af7e87d0a621b28fed81feb">Collection</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>42.1M</b><small>parameters</small></div>
+    <div class="stat"><b>44.8</b><small>validation perplexity</small></div>
+    <div class="stat"><b>56M</b><small>Hindi training tokens</small></div>
+    <div class="stat"><b>6 GB</b><small>RTX 3060 laptop GPU</small></div>
+  </div>
+</div></header>
+
+<section id="series"><div class="wrap">
+  <div class="eyebrow">The family</div>
+  <h2>One epic, many models</h2>
+  <p class="lead">Each model is named after a figure from the Ramayana whose role matches what the model does.</p>
+  <div class="family">
+    <div class="card"><span class="pill">smoke test</span><div class="dev hi">जटायु</div><h3>Jatayu</h3><div class="size">11M · Hindi</div><p>A small bird who took on a much bigger enemy. Our first test run: grammatical Hindi, made-up facts.</p></div>
+    <div class="card live"><span class="pill">live</span><div class="dev hi">हनुमान</div><h3>Hanuman</h3><div class="size">42M · Hindi</div><p>Master of speech. Fluent, grammatical Hindi in an encyclopaedic style.</p></div>
+    <div class="card"><span class="pill">planned</span><div class="dev hi">जाम्बवान</div><h3>Jambavan</h3><div class="size">~110M · Hindi</div><p>The wise elder. Larger model, trained on 1–2B tokens of the Sangraha corpus.</p></div>
+    <div class="card"><span class="pill">planned</span><div class="dev hi">सेतु</div><h3>Setu</h3><div class="size">multilingual</div><p>The bridge to Lanka. One model across Hindi, Marathi, Bengali, Tamil and more.</p></div>
+    <div class="card"><span class="pill">planned</span><div class="dev hi">अंगद</div><h3>Angad</h3><div class="size">chat / SFT</div><p>Rama's envoy. Instruction-tuned to answer instead of just continue.</p></div>
+  </div>
+</div></section>
+
+<section id="why"><div class="wrap">
+  <div class="eyebrow">Why "Hanuman"</div>
+  <h2>A name earned through grammar</h2>
+  <p class="lead">When Hanuman first meets Rama in the Kishkindha Kanda, Rama tells Lakshmana that this messenger must have mastered grammar, because he spoke at length without a single mistake. Getting grammar right is the first thing a language model learns, and it is what this model does best.</p>
+  <blockquote class="quote hi">नूनं व्याकरणं कृत्स्नमनेन बहुधा श्रुतम्।<br>बहु व्याहरतानेन न किञ्चिदपशब्दितम्॥
+    <small>Valmiki Ramayana, Kishkindha Kanda 3.29: "Surely he has studied the whole of grammar many times; though he spoke much, not one word was wrong."</small></blockquote>
+</div></section>
+
+<section id="samples"><div class="wrap">
+  <div class="eyebrow">Real outputs</div>
+  <h2>What Hanuman writes</h2>
+  <p class="lead">Unedited samples (temperature 0.8, top-p 0.95). <b>Bold</b> is the prompt and the rest is the model. The grammar is correct; facts are sometimes invented.</p>
+  <div class="samples">
+    <div class="sample"><div class="t hi"><span class="p">महात्मा गांधी</span> ने इस प्रस्ताव को अस्वीकार कर दिया। गांधी के इस भाषण में उन्होंने कहा कि गाँधीजी अपने आपको देश की भाषा समझें और अपने जीवन-यापन को ही हिन्दी माध्यम बना सकते हैं…</div><div class="note">Narrative style; keeps the subject consistent.</div></div>
+    <div class="sample"><div class="t hi"><span class="p">हिमालय पर्वत</span>, उत्तराखंड का एक भू-भाग है। हिमालय की दक्षिणी सीमा दक्षिण में नेपाल के हिमाल प्रदेश से लगती हुई भारत तक फैली हुई है।</div><div class="note">Geography roughly right: Uttarakhand, Nepal, India.</div></div>
+    <div class="sample"><div class="t hi"><span class="p">भारत की राजधानी नई दिल्ली</span> का एक क्षेत्र है। यह शहर दिल्ली नगर निगम के स्वामित्व में हैं…</div><div class="note">Links Delhi to its municipal corporation.</div></div>
+    <div class="sample"><div class="t hi"><span class="p">क्रिकेट</span> () एक खेल है जो मुख्य रूप से क्रिकेट में खेली जाती है। …इयान पोंटिंग…</div><div class="note">A typical small-model failure: right sentence shape, circular content, a made-up name.</div></div>
+  </div>
+</div></section>
+
+<section id="results"><div class="wrap">
+  <div class="eyebrow">Results</div>
+  <h2>Perplexity on held-out Hindi</h2>
+  <p class="lead">Measured on Wikipedia text the models never saw during training (lower is better). Making the model 4× larger cut perplexity by more than half.</p>
+  <div class="bars">
+    <div class="bar dim"><span>Jatayu · 11M</span><div class="track"><div class="fill" style="width:100%"></div></div><b>103.9</b></div>
+    <div class="bar"><span>Hanuman · 42M</span><div class="track"><div class="fill" style="width:43%"></div></div><b>44.8</b></div>
+  </div>
+</div></section>
+
+<section id="training"><div class="wrap">
+  <div class="eyebrow">How it was built</div>
+  <h2>From raw Wikipedia to weights</h2>
+  <div class="steps">
+    <div class="step"><b>Download</b><span>Hindi Wikipedia (Nov 2023), 163k articles, 608 MB</span></div>
+    <div class="step"><b>Clean</b><span>NFC normalisation, ≥80% Devanagari, exact dedup → 948k lines</span></div>
+    <div class="step"><b>Tokenize</b><span>SentencePiece Unigram, 32k vocab, ~1.1 tokens per Hindi word</span></div>
+    <div class="step"><b>Pack</b><span>uint16 memmap, no padding → 55.7M train tokens</span></div>
+    <div class="step"><b>Pretrain</b><span>3,250 steps × 65k tokens, bf16, cosine LR</span></div>
+  </div>
+  <div class="grid2">
+    <div><h3>Architecture</h3><table>
+      <tr><td>Type</td><td>Llama-style decoder (RMSNorm, SwiGLU, RoPE)</td></tr>
+      <tr><td>Hidden / FFN</td><td>512 / 1408</td></tr>
+      <tr><td>Layers / heads</td><td>8 / 8</td></tr>
+      <tr><td>Context</td><td>512 tokens</td></tr>
+      <tr><td>Embeddings</td><td>Tied input/output</td></tr>
+      <tr><td>Vocabulary</td><td>32,000 (byte fallback)</td></tr>
+    </table></div>
+    <div><h3>Training</h3><table>
+      <tr><td>GPU</td><td>RTX 3060 Laptop, 6 GB</td></tr>
+      <tr><td>Precision</td><td>bf16 autocast, SDPA attention</td></tr>
+      <tr><td>Optimiser</td><td>AdamW (0.9, 0.95), wd 0.1, clip 1.0</td></tr>
+      <tr><td>LR schedule</td><td>6e-4 → 6e-5 cosine, warmup</td></tr>
+      <tr><td>Tokens seen</td><td>~213M (~4 epochs)</td></tr>
+      <tr><td>Val loss</td><td>3.80</td></tr>
+    </table></div>
+  </div>
+</div></section>
+
+<section id="use"><div class="wrap">
+  <div class="eyebrow">Try it</div>
+  <h2>Run it in five lines</h2>
+  <p class="lead">This is a <b>base model</b>: it continues the text you give it rather than answering questions. Start the prompt with <code>&lt;hi&gt;</code>.</p>
+  <div class="code"><button class="copy">Copy</button><pre># pip install torch transformers sentencepiece huggingface_hub
+
+import torch, sentencepiece as spm
+from huggingface_hub import hf_hub_download
+from transformers import LlamaForCausalLM
+
+repo = "ashishpatel26/hanuman-hi-42m"
+model = LlamaForCausalLM.from_pretrained(repo)
+sp = spm.SentencePieceProcessor(model_file=hf_hub_download(repo, "spm.model"))
+
+x = torch.tensor([sp.encode("&lt;hi&gt;हिमालय पर्वत")])
+y = model.generate(x, max_new_tokens=100, do_sample=True,
+                   top_p=0.95, temperature=0.8, repetition_penalty=1.15)
+print(sp.decode(y[0].tolist()))</pre></div>
+</div></section>
+
+<section id="limits"><div class="wrap">
+  <div class="eyebrow">Be honest</div>
+  <h2>Limitations</h2>
+  <ul class="limits lead">
+    <li>Facts are often made up. At 42M parameters the model has learned how Hindi is written, not what is true.</li>
+    <li>Wikipedia only, so the style is encyclopaedic and conversational Hindi is weak.</li>
+    <li>Not instruction-tuned and no safety tuning. For research and learning only.</li>
+    <li>Context window is 512 tokens.</li>
+  </ul>
+</div></section>
+
+<footer><div class="wrap">
+  <span>Built by <a href="https://huggingface.co/ashishpatel26">ashishpatel26</a> · Apache-2.0</span>
+  <span class="hi">॥ जय श्री राम ॥</span>
+</div></footer>
+
+<script>
+const root=document.documentElement;
+try{const t=localStorage.getItem("theme");if(t)root.dataset.theme=t}catch(e){}
+document.getElementById("theme").onclick=()=>{
+  const dark=root.dataset.theme?root.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme=dark?"light":"dark";
+  try{localStorage.setItem("theme",root.dataset.theme)}catch(e){}
+};
+document.querySelectorAll(".copy").forEach(b=>b.onclick=()=>{
+  navigator.clipboard.writeText(b.nextElementSibling.innerText).then(()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1500)});
+});
+</script>
+</body>
+</html>
