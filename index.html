@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ramayana LLM</title>
-<meta name="description" content="Ramayana Series: small Indian-language LLMs trained from scratch on a single 6 GB laptop GPU. Hanuman-hi-42M is a Hindi base model.">
+<meta name="description" content="Ramayana Series: Hindi LLMs trained from scratch on a single 6 GB laptop GPU. Jatayu, Hanuman (base) and Angad (instruction-tuned).">
 <meta property="og:title" content="Ramayana LLM: Indic language models from scratch">
-<meta property="og:description" content="Hanuman-hi-42M: a 42M-parameter Hindi model trained from random init on an RTX 3060 6 GB.">
+<meta property="og:description" content="Jatayu, Hanuman and Angad: Hindi models trained from random init on an RTX 3060 6 GB.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪔</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -128,24 +128,26 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
   <a class="l" href="#angad">Chat</a>
   <a class="l" href="#training">Training</a>
   <a class="l" href="#use">Use it</a>
+  <a class="l" href="#roadmap">Roadmap</a>
   <button id="theme" aria-label="Toggle colour theme">◐</button>
 </div></nav>
 
 <header class="hero"><div class="wrap">
   <div class="om hi" aria-hidden="true">राम</div>
   <div class="eyebrow">Ramayana Series · Indic LLMs from scratch</div>
-  <h1>Hanuman<span>-hi-42M</span></h1>
-  <p class="tag hi">हिन्दी में सोचने वाला एक छोटा भाषा मॉडल</p>
-  <p class="lead">A 42-million-parameter Hindi language model trained <b>from random initialisation</b>, without any pretrained weights, on a single 6 GB laptop GPU. The tokenizer, data pipeline and training loop were all built from scratch.</p>
+  <h1>Ramayana<span> LLM</span></h1>
+  <p class="tag hi">हिन्दी में सोचने और जवाब देने वाले छोटे भाषा मॉडल</p>
+  <p class="lead">Three Hindi language models trained <b>from random initialisation</b>, without any pretrained weights, on a single 6 GB laptop GPU: <b>Jatayu</b> (11M), <b>Hanuman</b> (42M base) and <b>Angad</b> (42M, instruction-tuned to answer questions). The tokenizer, data pipeline, pretraining and fine-tuning were all built from scratch.</p>
   <div class="btns">
-    <a class="btn primary" href="https://huggingface.co/ashishpatel26/hanuman-hi-42m">🤗 Model on Hugging Face</a>
+    <a class="btn primary" href="https://huggingface.co/ashishpatel26/angad-hi-42m">🤗 Try Angad (chat)</a>
+    <a class="btn" href="https://huggingface.co/ashishpatel26/hanuman-hi-42m">Hanuman (base)</a>
     <a class="btn" href="https://github.com/ashishpatel26/Indian-Language-llm-model">Training code</a>
     <a class="btn" href="https://huggingface.co/collections/ashishpatel26/ramayana-series-indic-llms-from-scratch-6af7e87d0a621b28fed81feb">Collection</a>
   </div>
   <div class="stats">
-    <div class="stat"><b>42.1M</b><small>parameters</small></div>
-    <div class="stat"><b>46.4</b><small>validation perplexity</small></div>
-    <div class="stat"><b>56M</b><small>Hindi training tokens</small></div>
+    <div class="stat"><b>3</b><small>models released</small></div>
+    <div class="stat"><b>42.1M</b><small>parameters (largest)</small></div>
+    <div class="stat"><b>56M + 37k</b><small>pretraining tokens + Q&amp;A pairs</small></div>
     <div class="stat"><b>6 GB</b><small>RTX 3060 laptop GPU</small></div>
   </div>
 </div></header>
@@ -204,17 +206,24 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
     <div class="bar dim"><span>Jatayu · 11M</span><div class="track"><div class="fill" style="width:100%"></div></div><b>107.5</b></div>
     <div class="bar"><span>Hanuman · 42M</span><div class="track"><div class="fill" style="width:43%"></div></div><b>46.4</b></div>
   </div>
+  <h3 style="margin-top:36px">Instruction tuning: answer perplexity</h3>
+  <p class="lead">Measured on 380 held-out Hindi question–answer pairs, scoring the answer tokens only. Fine-tuning made answers 3.5× more predictable.</p>
+  <div class="bars">
+    <div class="bar dim"><span>Hanuman · base</span><div class="track"><div class="fill" style="width:100%"></div></div><b>58.4</b></div>
+    <div class="bar"><span>Angad · SFT</span><div class="track"><div class="fill" style="width:29%"></div></div><b>16.9</b></div>
+  </div>
 </div></section>
 
 <section id="training"><div class="wrap">
   <div class="eyebrow">How it was built</div>
-  <h2>From raw Wikipedia to weights</h2>
+  <h2>From raw Wikipedia to a chat model</h2>
   <div class="steps">
     <div class="step"><b>Download</b><span>Hindi Wikipedia (Nov 2023), 163k articles, 608 MB</span></div>
     <div class="step"><b>Clean</b><span>NFC normalisation, ≥80% Devanagari, exact dedup → 948k lines</span></div>
     <div class="step"><b>Tokenize</b><span>SentencePiece Unigram, 32k vocab, ~1.1 tokens per Hindi word</span></div>
     <div class="step"><b>Pack</b><span>uint16 memmap, no padding → 55.7M train tokens</span></div>
-    <div class="step"><b>Pretrain</b><span>3,500 steps × 65k tokens, bf16, cosine LR</span></div>
+    <div class="step"><b>Pretrain</b><span>Hanuman: 3,500 steps × 65k tokens, bf16, cosine LR</span></div>
+    <div class="step"><b>Fine-tune</b><span>Angad: 37k Hindi Q&amp;A, loss on answers only, 2 epochs, ~1 hour</span></div>
   </div>
   <div class="grid2">
     <div><h3>Architecture</h3><table>
@@ -238,8 +247,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
 
 <section id="use"><div class="wrap">
   <div class="eyebrow">Try it</div>
-  <h2>Run it in five lines</h2>
-  <p class="lead">This is a <b>base model</b>: it continues the text you give it rather than answering questions. Start the prompt with <code>&lt;hi&gt;</code>.</p>
+  <h2>Run it in a few lines</h2>
+  <p class="lead"><b>Hanuman</b> and <b>Jatayu</b> are base models: they continue the text you give them, so start the prompt with <code>&lt;hi&gt;</code>. <b>Angad</b> answers questions; use the template shown below.</p>
   <div class="code"><button class="copy">Copy</button><pre># pip install torch transformers sentencepiece huggingface_hub
 
 import torch, sentencepiece as spm
@@ -254,6 +263,28 @@ x = torch.tensor([sp.encode("&lt;hi&gt;हिमालय पर्वत")])
 y = model.generate(x, max_new_tokens=100, do_sample=True,
                    top_p=0.95, temperature=0.8, repetition_penalty=1.15)
 print(sp.decode(y[0].tolist()))</pre></div>
+  <div class="code"><button class="copy">Copy</button><pre># Angad: ask a question
+repo = "ashishpatel26/angad-hi-42m"
+model = LlamaForCausalLM.from_pretrained(repo)
+sp = spm.SentencePieceProcessor(model_file=hf_hub_download(repo, "spm.model"))
+
+x = torch.tensor([sp.encode("&lt;hi&gt;प्रश्न: स्वस्थ रहने के तीन उपाय बताइए।\nउत्तर: ")])
+y = model.generate(x, max_new_tokens=150, do_sample=True, top_p=0.9, temperature=0.7,
+                   repetition_penalty=1.15, eos_token_id=sp.eos_id(), pad_token_id=sp.pad_id())
+print(sp.decode(y[0, x.shape[1]:].tolist()))</pre></div>
+</div></section>
+
+<section id="roadmap"><div class="wrap">
+  <div class="eyebrow">What's next</div>
+  <h2>Roadmap</h2>
+  <ul class="limits lead">
+    <li>✅ Jatayu-hi-11M: proof that the pipeline works</li>
+    <li>✅ Hanuman-hi-42M: Hindi base model</li>
+    <li>✅ Angad-hi-42M: instruction-tuned on Hindi Q&amp;A</li>
+    <li>⏳ Jambavan (~110M): pretrained on 1–2B tokens of AI4Bharat Sangraha, for better facts</li>
+    <li>⏳ Angad v2: instruction tuning on top of Jambavan</li>
+    <li>⏳ Setu: one multilingual model for Hindi, Marathi, Bengali, Tamil, Telugu and more</li>
+  </ul>
 </div></section>
 
 <section id="limits"><div class="wrap">
@@ -261,8 +292,9 @@ print(sp.decode(y[0].tolist()))</pre></div>
   <h2>Limitations</h2>
   <ul class="limits lead">
     <li>Facts are often made up. At 42M parameters the model has learned how Hindi is written, not what is true.</li>
-    <li>Wikipedia only, so the style is encyclopaedic and conversational Hindi is weak.</li>
-    <li>Not instruction-tuned and no safety tuning. For research and learning only.</li>
+    <li>Pretrained on Wikipedia only, so the style is encyclopaedic and conversational Hindi is weak.</li>
+    <li>Angad's instruction data is machine-translated, so it inherits translation errors and Western-centric answers.</li>
+    <li>No RLHF and no safety tuning. For research and learning only.</li>
     <li>Context window is 512 tokens.</li>
   </ul>
 </div></section>
