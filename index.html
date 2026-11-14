@@ -125,6 +125,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
   <a class="brand" href="#">🪔 Ramayana LLM</a>
   <a class="l" href="#series">Series</a>
   <a class="l" href="#samples">Samples</a>
+  <a class="l" href="#angad">Chat</a>
   <a class="l" href="#training">Training</a>
   <a class="l" href="#use">Use it</a>
   <button id="theme" aria-label="Toggle colour theme">◐</button>
@@ -156,9 +157,9 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
   <div class="family">
     <div class="card live"><span class="pill">live</span><div class="dev hi">जटायु</div><h3><a href="https://huggingface.co/ashishpatel26/jatayu-hi-11m">Jatayu</a></h3><div class="size">11M · Hindi</div><p>A small bird who took on a much bigger enemy. Our first test run: grammatical Hindi, made-up facts.</p></div>
     <div class="card live"><span class="pill">live</span><div class="dev hi">हनुमान</div><h3><a href="https://huggingface.co/ashishpatel26/hanuman-hi-42m">Hanuman</a></h3><div class="size">42M · Hindi</div><p>Master of speech. Fluent, grammatical Hindi in an encyclopaedic style.</p></div>
+    <div class="card live"><span class="pill">live</span><div class="dev hi">अंगद</div><h3><a href="https://huggingface.co/ashishpatel26/angad-hi-42m">Angad</a></h3><div class="size">42M · Hindi chat</div><p>Rama's envoy. Hanuman instruction-tuned on 37k Hindi Q&amp;A pairs, so it answers instead of just continuing.</p></div>
     <div class="card"><span class="pill">planned</span><div class="dev hi">जाम्बवान</div><h3>Jambavan</h3><div class="size">~110M · Hindi</div><p>The wise elder. Larger model, trained on 1–2B tokens of the Sangraha corpus.</p></div>
     <div class="card"><span class="pill">planned</span><div class="dev hi">सेतु</div><h3>Setu</h3><div class="size">multilingual</div><p>The bridge to Lanka. One model across Hindi, Marathi, Bengali, Tamil and more.</p></div>
-    <div class="card"><span class="pill">planned</span><div class="dev hi">अंगद</div><h3>Angad</h3><div class="size">chat / SFT</div><p>Rama's envoy. Instruction-tuned to answer instead of just continue.</p></div>
   </div>
 </div></section>
 
@@ -180,6 +181,19 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
     <div class="sample"><div class="t hi"><span class="p">भारत की राजधानी नई दिल्ली</span> का एक क्षेत्र है। यह शहर दिल्ली नगर निगम के स्वामित्व में हैं…</div><div class="note">Links Delhi to its municipal corporation.</div></div>
     <div class="sample"><div class="t hi"><span class="p">क्रिकेट</span> () एक खेल है जो मुख्य रूप से क्रिकेट में खेली जाती है। …इयान पोंटिंग…</div><div class="note">A typical small-model failure: right sentence shape, circular content, a made-up name.</div></div>
   </div>
+</div></section>
+
+<section id="angad"><div class="wrap">
+  <div class="eyebrow">Angad · instruction-tuned</div>
+  <h2>Ask it a question</h2>
+  <p class="lead">Angad is Hanuman fine-tuned for about an hour on 37k Hindi question–answer pairs. Answer perplexity fell from <b>58.4 → 16.9</b>, and it now ends every answer cleanly. It has learned <i>how</i> to answer, but not yet <i>what</i> is true.</p>
+  <div class="samples">
+    <div class="sample"><div class="t hi"><span class="p">प्रश्न: स्वस्थ रहने के तीन उपाय बताइए।</span><br>1. बेहतर भोजन करें … एक स्वस्थ आहार बनाए रखें। 3. नियमित रूप से व्यायाम करें: तनाव कम करने और लगातार व्यायाम करने पर ध्यान केंद्रित करें…</div><div class="note">Follows the "three tips" instruction with a numbered list (and skips number 2).</div></div>
+    <div class="sample"><div class="t hi"><span class="p">प्रश्न: होली का त्योहार क्यों मनाया जाता है?</span><br>होली एक लोकप्रिय त्योहार है। यह एक बहुत ही प्राचीन त्योहार है, जो हर साल अक्टूबर के पहले और अंतिम दिनों में मनाया जाता है।</div><div class="note">Right tone, wrong month: Holi falls in Phalgun (March).</div></div>
+    <div class="sample"><div class="t hi"><span class="p">प्रश्न: भारत की राजधानी क्या है?</span><br>चेन्नई</div><div class="note">Answers briefly in the right format, but the fact is wrong. Small models need more parameters to store facts.</div></div>
+  </div>
+  <div class="code"><button class="copy">Copy</button><pre>prompt = "&lt;hi&gt;प्रश्न: होली का त्योहार क्यों मनाया जाता है?\nउत्तर: "
+# model: ashishpatel26/angad-hi-42m  ·  generate until &lt;/s&gt;</pre></div>
 </div></section>
 
 <section id="results"><div class="wrap">
