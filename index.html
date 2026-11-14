@@ -143,7 +143,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
   </div>
   <div class="stats">
     <div class="stat"><b>42.1M</b><small>parameters</small></div>
-    <div class="stat"><b>44.8</b><small>validation perplexity</small></div>
+    <div class="stat"><b>46.4</b><small>validation perplexity</small></div>
     <div class="stat"><b>56M</b><small>Hindi training tokens</small></div>
     <div class="stat"><b>6 GB</b><small>RTX 3060 laptop GPU</small></div>
   </div>
@@ -154,8 +154,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
   <h2>One epic, many models</h2>
   <p class="lead">Each model is named after a figure from the Ramayana whose role matches what the model does.</p>
   <div class="family">
-    <div class="card"><span class="pill">smoke test</span><div class="dev hi">जटायु</div><h3>Jatayu</h3><div class="size">11M · Hindi</div><p>A small bird who took on a much bigger enemy. Our first test run: grammatical Hindi, made-up facts.</p></div>
-    <div class="card live"><span class="pill">live</span><div class="dev hi">हनुमान</div><h3>Hanuman</h3><div class="size">42M · Hindi</div><p>Master of speech. Fluent, grammatical Hindi in an encyclopaedic style.</p></div>
+    <div class="card live"><span class="pill">live</span><div class="dev hi">जटायु</div><h3><a href="https://huggingface.co/ashishpatel26/jatayu-hi-11m">Jatayu</a></h3><div class="size">11M · Hindi</div><p>A small bird who took on a much bigger enemy. Our first test run: grammatical Hindi, made-up facts.</p></div>
+    <div class="card live"><span class="pill">live</span><div class="dev hi">हनुमान</div><h3><a href="https://huggingface.co/ashishpatel26/hanuman-hi-42m">Hanuman</a></h3><div class="size">42M · Hindi</div><p>Master of speech. Fluent, grammatical Hindi in an encyclopaedic style.</p></div>
     <div class="card"><span class="pill">planned</span><div class="dev hi">जाम्बवान</div><h3>Jambavan</h3><div class="size">~110M · Hindi</div><p>The wise elder. Larger model, trained on 1–2B tokens of the Sangraha corpus.</p></div>
     <div class="card"><span class="pill">planned</span><div class="dev hi">सेतु</div><h3>Setu</h3><div class="size">multilingual</div><p>The bridge to Lanka. One model across Hindi, Marathi, Bengali, Tamil and more.</p></div>
     <div class="card"><span class="pill">planned</span><div class="dev hi">अंगद</div><h3>Angad</h3><div class="size">chat / SFT</div><p>Rama's envoy. Instruction-tuned to answer instead of just continue.</p></div>
@@ -187,8 +187,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
   <h2>Perplexity on held-out Hindi</h2>
   <p class="lead">Measured on Wikipedia text the models never saw during training (lower is better). Making the model 4× larger cut perplexity by more than half.</p>
   <div class="bars">
-    <div class="bar dim"><span>Jatayu · 11M</span><div class="track"><div class="fill" style="width:100%"></div></div><b>103.9</b></div>
-    <div class="bar"><span>Hanuman · 42M</span><div class="track"><div class="fill" style="width:43%"></div></div><b>44.8</b></div>
+    <div class="bar dim"><span>Jatayu · 11M</span><div class="track"><div class="fill" style="width:100%"></div></div><b>107.5</b></div>
+    <div class="bar"><span>Hanuman · 42M</span><div class="track"><div class="fill" style="width:43%"></div></div><b>46.4</b></div>
   </div>
 </div></section>
 
@@ -200,7 +200,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
     <div class="step"><b>Clean</b><span>NFC normalisation, ≥80% Devanagari, exact dedup → 948k lines</span></div>
     <div class="step"><b>Tokenize</b><span>SentencePiece Unigram, 32k vocab, ~1.1 tokens per Hindi word</span></div>
     <div class="step"><b>Pack</b><span>uint16 memmap, no padding → 55.7M train tokens</span></div>
-    <div class="step"><b>Pretrain</b><span>3,250 steps × 65k tokens, bf16, cosine LR</span></div>
+    <div class="step"><b>Pretrain</b><span>3,500 steps × 65k tokens, bf16, cosine LR</span></div>
   </div>
   <div class="grid2">
     <div><h3>Architecture</h3><table>
@@ -216,8 +216,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
       <tr><td>Precision</td><td>bf16 autocast, SDPA attention</td></tr>
       <tr><td>Optimiser</td><td>AdamW (0.9, 0.95), wd 0.1, clip 1.0</td></tr>
       <tr><td>LR schedule</td><td>6e-4 → 6e-5 cosine, warmup</td></tr>
-      <tr><td>Tokens seen</td><td>~213M (~4 epochs)</td></tr>
-      <tr><td>Val loss</td><td>3.80</td></tr>
+      <tr><td>Tokens seen</td><td>~229M (~4 epochs)</td></tr>
+      <tr><td>Val loss</td><td>3.84</td></tr>
     </table></div>
   </div>
 </div></section>
